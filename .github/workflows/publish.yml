@@ -1,0 +1,26 @@
+on:
+  push:
+    branches:
+      - master
+
+jobs: 
+    build-and-push:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+            
+            - name: Login to Docker Hub
+              run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{secrets.DOCKER_PASSWORD}}"
+
+            - name: Build Docker Image
+              run: docker build -t casillas25/76350-711-monocases:${{ github.sha }} .
+            
+            - name: Tag Latest
+              run: docker tag casillas25/76350-711-monocases:${{ github.sha }} casillas25/76350-711-monocases:latest
+              
+            - name: Push Docker Image
+              run: |
+                docker push casillas25/76350-711-monocases:${{ github.sha }}
+                docker push casillas25/76350-711-monocases:latest
+
